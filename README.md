@@ -4,8 +4,11 @@ By Team DOGE
 
 Team members:
 Divyansh Mohan Rao : divyanshrao@csu.fullerton.edu (885191403)
+
 Janhvi Guha: 
+
 Harshavardhan Jamedar  : 
+
 Shrinivas Patil :
 
 
