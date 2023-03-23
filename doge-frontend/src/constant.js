@@ -1,0 +1,1 @@
+export const cryptoZombiesAddress = "0xfEDfD77037e36f9767A8D03a59f2e899B8D416F2";
