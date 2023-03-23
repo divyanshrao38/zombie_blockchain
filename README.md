@@ -3,24 +3,24 @@ Mid Term Project
 By Team DOGE
 
 Team members:
-Divyansh Mohan Rao : divyanshrao@csu.fullerton.edu (885191403)
+•	Divyansh Mohan Rao : divyanshrao@csu.fullerton.edu (885191403)
 
-Janhvi Guha: 
+•	Janhvi Guha: 
 
-Harshavardhan Jamedar  : 
+•	Harshavardhan Jamedar  : 
 
-Shrinivas Patil :
+•	Shrinivas Patil :
 
 
 Professor
 Prof. Wenlin Han, CSU Fullerton: whan@fullerton.edu
 
 Additional Work
-Updated the user interface using React framework.
-Added customized images to Zombie
-Updated the contract to have more than 1 zombies per owner
-Added UI code to handle more than 1 zombies per owner
-Added function OwnerOf to check the ownership of Zombie.
+•	Updated the user interface using React framework.
+•	Added customized images to Zombie
+•	Updated the contract to have more than 1 zombies per owner
+•	Added UI code to handle more than 1 zombies per owner
+•	Added function OwnerOf to check the ownership of Zombie.
 
 Project Repo URL
 https://github.com/divyanshrao38/zombie_blockchain.git 
@@ -28,16 +28,16 @@ https://github.com/divyanshrao38/zombie_blockchain.git
 
 Instructions:
 Requirments:
-Metamask account
-Node.js
-npx-create-react-app
-Ganache
+•	Metamask account
+•	Node.js
+•	npx-create-react-app
+•	Ganache
 
 
 Setting Up Enviorment:
-Insatlling Metamask wallet either via using chromium extentions link
-Installing Node.js
-Installing ganache
+•	Insatlling Metamask wallet 
+•	Installing Node.js
+•	Installing ganache
 1. Clone/download the repos
 2. Configure the dependency
  Make sure you have replaced the ownership in doge-fronent/app.js with your own contract ownership address.
