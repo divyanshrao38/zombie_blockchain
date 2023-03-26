@@ -130,7 +130,7 @@ function Zombie({ zombieId, userAccount, handleLevelUpCallback }) {
       } else {
         await cryptoZombies.methods.changeDna(zombieId, inputValue).send({from: userAccount})
         .on("receipt", function (receipt) {
-          setZombieData({ ...zombieData, name: inputValue })
+          setZombieData({ ...zombieData, dna: inputValue })
         })
         .on("error", function (error) {
          console.log(error)
