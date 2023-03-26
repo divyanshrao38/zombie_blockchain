@@ -26,6 +26,12 @@ Additional Work
 
 •	Added function OwnerOf to check the ownership of Zombie.
 
+•	Added function Edit Name to Change the Name of Zombie.
+
+•	Added function Edit DNA to Change the DNA of Zombie.
+
+
+
 
 Project Repo URL
 https://github.com/divyanshrao38/zombie_blockchain.git 

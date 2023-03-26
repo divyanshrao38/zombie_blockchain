@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useMemo  } from 'react';
-import {cryptoZombiesABI} from './cryptozombies_abi.js';
+import React, { useState, useEffect, useMemo } from 'react';
+import { cryptoZombiesABI } from './cryptozombies_abi.js';
 import Web3 from 'web3';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Card, Button,Modal, Form, Container, Toast  } from 'react-bootstrap';
+import { Card, Button, Modal, Form, Container, DropdownButton, Row, Col, Dropdown } from 'react-bootstrap';
 import Navbar from './Navbar';
 import { createAvatar } from '@dicebear/core';
 import { lorelei } from '@dicebear/collection';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FaEdit } from 'react-icons/fa';
+
 
 import './App.css';
 
@@ -16,44 +19,57 @@ const cryptoZombies = new webt.eth.Contract(cryptoZombiesABI, cryptoZombiesAddre
 function Zombie({ zombieId, userAccount, handleLevelUpCallback }) {
   const [zombieData, setZombieData] = useState(null);
   const [sprite, setSprite] = useState("lorelei");
-  
+  const [editModal, setEditModal] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("Edit Name");
+  const [inputValue, setInputValue] = useState(zombieData?.name);
+
   useEffect(() => {
     async function fetchZombieData() {
-      const zombie = await cryptoZombies.methods.zombies(zombieId).call() ;
+      const zombie = await cryptoZombies.methods.zombies(zombieId).call();
       setZombieData(zombie);
-      console.log("id===>>",zombie)
+      console.log("id===>>", zombie)
     }
     fetchZombieData();
   }, [zombieId]);
 
-  const getZombieAvtar = ()=>{
-     console.log("sse")
+
+  useEffect(() => {
+    if (selectedOption === "Edit Name") {
+      setInputValue(zombieData?.name);
+    } else {
+      setInputValue(zombieData?.dna);
+    }
+  }, [selectedOption, editModal]);
+
+  const getZombieAvtar = () => {
+    console.log("sse")
+    setEditModal(false)
   }
 
   const avatar = createAvatar(lorelei, {
-      "seed": zombieData ?zombieData?.dna+ zombieData?.level : "test" ,
-      flip: false,
-      backgroundColor: ["b6e3f4","c0aede","d1d4f9"],
-      backgroundType: ["gradientLinear","solid"],
-      backgroundRotation: [0,360],
-      randomizeIds: true,
-      beard: ["variant01","variant02"],
-      beardProbability: 15,
-      earrings: ["variant01","variant02","variant03"],
-      earringsProbability: 25,
-      eyebrows: ["variant01","variant02","variant03"],
-      eyes: ["variant01","variant02","variant03"],
-      freckles: ["variant01"],
-      frecklesProbability: 50,
-      glasses: ["variant01","variant02","variant03"],
-      hair: ["variant01","variant02","variant03"],
-      hairAccessories: ["flowers"],
-      hairAccessoriesProbability: 50,
-      head: ["variant01","variant02","variant03"],
-      mouth: ["happy01","happy02","happy03","happy04","happy05","happy06","happy07","happy08","happy09"],
-      nose: ["variant01","variant02","variant03"],
-      size: 150,
-    }).toDataUriSync();
+    "seed": zombieData ? zombieData?.dna + zombieData?.level : "test",
+    flip: false,
+    backgroundColor: ["b6e3f4", "c0aede", "d1d4f9"],
+    backgroundType: ["gradientLinear", "solid"],
+    backgroundRotation: [0, 360],
+    randomizeIds: true,
+    beard: ["variant01", "variant02"],
+    beardProbability: 15,
+    earrings: ["variant01", "variant02", "variant03"],
+    earringsProbability: 25,
+    eyebrows: ["variant01", "variant02", "variant03"],
+    eyes: ["variant01", "variant02", "variant03"],
+    freckles: ["variant01"],
+    frecklesProbability: 50,
+    glasses: ["variant01", "variant02", "variant03"],
+    hair: ["variant01", "variant02", "variant03"],
+    hairAccessories: ["flowers"],
+    hairAccessoriesProbability: 50,
+    head: ["variant01", "variant02", "variant03"],
+    mouth: ["happy01", "happy02", "happy03", "happy04", "happy05", "happy06", "happy07", "happy08", "happy09"],
+    nose: ["variant01", "variant02", "variant03"],
+    size: 150,
+  }).toDataUriSync();
 
 
   if (!zombieData) {
@@ -65,34 +81,128 @@ function Zombie({ zombieId, userAccount, handleLevelUpCallback }) {
       await cryptoZombies.methods.levelUp(zombieId).send({
         from: userAccount,
         value: Web3.utils.toWei("0.001", "ether")
-      }).then(data =>{
-        setZombieData({...zombieData,level: Number(zombieData.level) +1  })
+      }).then(data => {
+        setZombieData({ ...zombieData, level: Number(zombieData.level) + 1 })
       })
-      
+
       //setTxStatus("Power overwhelming! Zombie successfully leveled up");
     } catch (error) {
       //setTxStatus(error.message);
       console.log(error)
     }
   };
+
+  const handleEdit = () => {
+    setEditModal(true)
+  }
+
+  const handleEditClose = () => {
+    setEditModal(false)
+  }
+
+  const handleDropdownChange = (event) => {
+    setSelectedOption(event);
+  };
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+
+
+  const handleEditSave = async () => {
+    // if (selectedOption === "Edit Name") {
+    //   await props.changeName(inputValue);
+    // } else {
+    //   await props.changeDna(inputValue);
+    // }
+
+    try {
+      //setTxStatus("Leveling up your zombie...");
+      if (selectedOption === "Edit Name") {
+        await cryptoZombies.methods.changeName(zombieId, inputValue).send({from: userAccount})
+        .on("receipt", function (receipt) {
+          setZombieData({ ...zombieData, name: inputValue })
+        })
+        .on("error", function (error) {
+         console.log(error)
+        });
+      } else {
+        await cryptoZombies.methods.changeDna(zombieId, inputValue).send({from: userAccount})
+        .on("receipt", function (receipt) {
+          setZombieData({ ...zombieData, name: inputValue })
+        })
+        .on("error", function (error) {
+         console.log(error)
+        });
+      }
+
+
+      //setTxStatus("Power overwhelming! Zombie successfully leveled up");
+    } catch (error) {
+      //setTxStatus(error.message);
+      console.log(error)
+    }
+    handleEditClose()
+  }
+
   return (
     <div className="zombie">
-       <Card style={{ width: '18rem' }}>
-      <Card.Img variant="top" src={avatar} />
-      <Card.Body>
-        <Card.Title>{zombieData.name}</Card.Title>
-        <Card.Text><ul>
-        <li>Name: {zombieData.name}</li>
-        <li>DNA: {zombieData.dna}</li>
-        <li>Level: {zombieData.level}</li>
-        <li>Wins: {zombieData.winCount}</li>
-        <li>Losses: {zombieData.lossCount}</li>
-        <li>Ready Time: {zombieData.readyTime}</li>
-      </ul></Card.Text>
-        <Button variant="secondary" onClick={()=>handleLevelUp()}>Level Up</Button>
-      </Card.Body>
-    </Card>
-      
+      <Container>
+        <Modal show={editModal} onHide={handleEditClose}>
+          <Modal.Header closeButton>
+            <Modal.Title> {selectedOption}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {zombieData.level > 19 && (
+              <DropdownButton
+                id="dropdown-basic-button"
+                title={selectedOption}
+                onSelect={handleDropdownChange}
+                menuVariant="dark"
+                variant="secondary"
+              >
+                <Dropdown.Item eventKey="Edit Name">Edit Name</Dropdown.Item>
+                <Dropdown.Item eventKey="Edit DNA">Edit DNA</Dropdown.Item>
+              </DropdownButton>
+            )}
+            <br />
+            <input
+              type="text"
+              className="form-control"
+              placeholder={`Enter ${selectedOption}`}
+              value={inputValue}
+              onChange={handleInputChange}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => handleEditSave(selectedOption, inputValue)}>
+              Edit
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
+      <Card >
+        <Card.Img variant="top" src={avatar} />
+        <Card.Body>
+          <Card.Title>{zombieData.name}</Card.Title>
+          <Card.Text><ul>
+            <li>Name: {zombieData.name}</li>
+            <li> DNA: {zombieData.dna} </li>
+            <li>Level: {zombieData.level}</li>
+            <li>Wins: {zombieData.winCount}</li>
+            <li>Losses: {zombieData.lossCount}</li>
+            <li>Ready Time: {zombieData.readyTime}</li>
+          </ul></Card.Text>
+          <Row  >
+            <Col>
+              <Button variant="outline-secondary" onClick={() => handleLevelUp()}>Level Up</Button></Col>
+
+            {Number(zombieData.level) > 1 ? <Col><Button variant="outline-secondary" onClick={() => handleEdit()}><FaEdit /></Button> </Col> : <></>}
+          </Row >
+        </Card.Body>
+      </Card>
+
     </div>
   );
 }
@@ -105,12 +215,12 @@ function ZombieList({ userAccount, zombieIds }) {
     async function fetchZombies() {
       const ids = await cryptoZombies.methods.getZombiesByOwner(userAccount).call();
       setZombies([...ids]);
-      console.log("zombie",zombies)
+      console.log("zombie", zombies)
     }
     fetchZombies();
   }, [userAccount, zombieIds]);
 
-  var handleLevelUpCallback = ()=>{
+  var handleLevelUpCallback = () => {
     let temp = zombies
     setZombies([]).then(setZombies(temp))
   }
@@ -118,7 +228,7 @@ function ZombieList({ userAccount, zombieIds }) {
   return (
     <Container fluid className="card-container">
       {zombies?.map(zombieId => (
-        <Zombie key={zombieId} zombieId={zombieId} userAccount={userAccount} handleLevelUpCallback={handleLevelUpCallback}/>
+        <Zombie key={zombieId} zombieId={zombieId} userAccount={userAccount} handleLevelUpCallback={handleLevelUpCallback} />
       ))}
     </Container>
   );
@@ -128,7 +238,7 @@ function App() {
   const [userAccount, setUserAccount] = useState(null);
   const [modal, setModal] = useState(false);
   const [newZombieName, setNewZombieName] = useState("");
-  const [currentZombieId,setCurrentZombieId]  = useState([])
+  const [currentZombieId, setCurrentZombieId] = useState([])
   const [balanceModal, setBalanceModal] = useState(false);
   const [accountAddress, setAccountAddress] = useState("");
   const [balanceInfo, setBalanceInfo] = useState("");
@@ -163,7 +273,7 @@ function App() {
     setNewZombieName("")
   };
 
-  const handleOwnerClose = () =>{
+  const handleOwnerClose = () => {
     setBalanceModal(false)
     setBalanceInfo("")
     setAccountAddress("")
@@ -172,10 +282,10 @@ function App() {
   const handleCreate = () => {
     setModal(false)
     createRandomZombie(newZombieName)
-    
+
   };
   const handleShow = () => setModal(true);
-  const handleCreateZombies = ()=>{
+  const handleCreateZombies = () => {
     handleShow()
   }
   const handleInputChange = (event) => {
@@ -186,20 +296,20 @@ function App() {
     setAccountAddress(event.target.value);
   };
 
-  const handleShowOwner = () =>{
+  const handleShowOwner = () => {
     console.log("hereee")
     setBalanceModal(true)
   }
 
-  async function handleShowOwnerCreate  (){
-    try{
+  async function handleShowOwnerCreate() {
+    try {
       var balanceOfResult = await cryptoZombies.methods.ownerOf(accountAddress).call();
       console.log(balanceOfResult)
       setBalanceInfo(<div>
         Owner Address : {balanceOfResult}
       </div>)
     }
-    catch (error){
+    catch (error) {
       console.log(error)
     }
   }
@@ -222,7 +332,7 @@ function App() {
       // Send the transaction
       const receipt = await cryptoZombies.methods.createRandomZombie(name).send({ from: userAccount });
 
-  
+
       // Get the updated zombie list and display it
       const ids = await cryptoZombies.methods.getZombiesByOwner(userAccount).call();
       setCurrentZombieId([...ids])
@@ -235,16 +345,16 @@ function App() {
   }
   return (
     <div>
-       <Modal show={modal} onHide={handleClose}>
+      <Modal show={modal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Enter Zombie Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <Form.Group controlId="formZombieName">
+          <Form.Group controlId="formZombieName">
             <Form.Label>Zombie Name:</Form.Label>
             <Form.Control type="text" placeholder="Enter zombie name" value={newZombieName} onChange={handleInputChange} />
           </Form.Group>
-        
+
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCreate}>
@@ -260,7 +370,7 @@ function App() {
           <Modal.Title>Enter Zombie Id</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <Form.Group controlId="formAccountaddresss">
+          <Form.Group controlId="formAccountaddresss">
             <Form.Label>Zombie Id:</Form.Label>
             <Form.Control type="text" placeholder="Enter Zombie id" value={accountAddress} onChange={handleAccountInputChange} />
           </Form.Group>
@@ -272,10 +382,10 @@ function App() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Navbar handleCreateZombies={handleCreateZombies} handleShowOwner={handleShowOwner}/>
-      <ZombieList userAccount={userAccount} zombieIds = {currentZombieId} />
+      <Navbar handleCreateZombies={handleCreateZombies} handleShowOwner={handleShowOwner} />
+      <ZombieList userAccount={userAccount} zombieIds={currentZombieId} />
     </div>
-    
+
   );
 }
 
