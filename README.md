@@ -5,11 +5,11 @@ By Team DOGE
 Team members:
 •	Divyansh Mohan Rao : divyanshrao@csu.fullerton.edu (885191403)
 
-•	Janhvi Guha: 
+•	Janhvi Guha: jguha@csu.fullerton.edu (885186973)
 
-•	Harshavardhan Jamedar  : 
+•	Harshavardhan Jemedar  : harsha_jemedar@csu.fullerton.edu (885191015)
 
-•	Shrinivas Patil :
+•	Shrinivas Patil : pshrinivas264@csu.fullerton.edu (885212043)
 
 
 Professor
@@ -30,6 +30,7 @@ Additional Work
 
 •	Added function Edit DNA to Change the DNA of Zombie.
 
+• Tried to deploy on Infura test network (incomplete).
 
 
 
